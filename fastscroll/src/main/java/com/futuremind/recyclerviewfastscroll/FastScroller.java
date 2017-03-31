@@ -66,6 +66,19 @@ public class FastScroller extends LinearLayout {
     }
 
     /**
+     * Manually set the {@link SectionTitleProvider} instead of pulling it from the {@link RecyclerView}. Make sure
+     * to set this before you set the RecyclerView
+     * This can be handy in case you are using a wrapping adapter that cannot implement {@link SectionTitleProvider}
+     * @param sectionTitleProvider A {@link SectionTitleProvider} to use
+     */
+    public void setSectionTitleProvider(SectionTitleProvider sectionTitleProvider) {
+        titleProvider = sectionTitleProvider;
+        if (recyclerView != null) {
+            throw new RuntimeException("You need to set the SectionTitleProvider before setting the RecyclerView");
+        }
+    }
+
+    /**
      * Enables custom layout for {@link FastScroller}.
      * @param viewProvider A {@link ScrollerViewProvider} for the {@link FastScroller} to use when building layout.
      */
@@ -88,7 +101,7 @@ public class FastScroller extends LinearLayout {
      */
     public void setRecyclerView(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
-        if(recyclerView.getAdapter() instanceof SectionTitleProvider) titleProvider = (SectionTitleProvider) recyclerView.getAdapter();
+        if(titleProvider == null && recyclerView.getAdapter() instanceof SectionTitleProvider) titleProvider = (SectionTitleProvider) recyclerView.getAdapter();
         recyclerView.addOnScrollListener(scrollListener);
         invalidateVisibility();
         recyclerView.setOnHierarchyChangeListener(new OnHierarchyChangeListener() {
